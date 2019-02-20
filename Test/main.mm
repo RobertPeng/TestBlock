@@ -21,34 +21,29 @@ public:
     ~A() {
         printf("%p: A::~A()\n", this);
     }
-    void p(){
-        printf("\n");
-        printf("%p: A::p() this\n ", this);
-        printf("%p: A::p() p\n ", &A::p);
-        printf("\n");
-    }
-    
-    void test() {
-        num = 10;
-    }
 };
 
 int main(int argc, const char * argv[]) {
-    A *a = new A();
-    a->p();
-
-    dispatch_block_t block = ^{
-        printf("\n");
-        printf("block begins\n");
-        a->p();
-        printf("block end\n");
-        printf("\n");
+    __block A a;
+    a.num = 5;
+    printf("====== 定义__block关键字后 ======\n");
+    printf("a addr: %p\n", &a);
+    printf("a.num: %d\n", a.num);
+    printf("a.num addr: %p\n\n", &(a.num));
+    
+    void (^TestBlock)(void) = ^{
+        printf("====== 在block中 ======\n");
+        printf("a addr: %p\n", &a);
+        printf("a.num: %d\n", a.num);
+        printf("a.num addr: %p\n\n", &(a.num));
     };
-
-    dispatch_async(dispatch_get_main_queue(), block);
-    dispatch_async(dispatch_get_main_queue(), block);
-
-    [[NSRunLoop currentRunLoop] run];
+    
+    printf("====== 在block后 ======\n");
+    printf("a addr: %p\n", &a);
+    printf("a.num: %d\n", a.num);
+    printf("a.num addr: %p\n\n", &(a.num));
+    a.num = 15;
+    TestBlock();
     
     return 0;
 }
